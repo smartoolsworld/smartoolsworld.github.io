@@ -3,28 +3,212 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Word Counter - SmartoolsWorld</title>
-<meta name="description" content="SmartoolsWorld Word Counter - Free online tool to count words, characters, and more quickly and easily.">
+<title>SmartoolsWorld Word Counter Pro</title>
+<meta name="description" content="SmartoolsWorld Pro Word Counter - Automatic grammar check, readability scores, keyword analysis, and writing progress. Modern and professional interface.">
+
+<!-- Favicon placeholder -->
+<link rel="icon" href="https://via.placeholder.com/32.png?text=S" type="image/png">
+
 <style>
-body {font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; text-align: center;}
-textarea {width: 100%; height: 150px; padding: 10px; font-size: 16px;}
-button {padding: 10px 20px; font-size: 16px; margin-top: 10px;}
-.result {margin-top: 20px; font-size: 18px;}
+:root {
+  --bg-light: #f4f6f8;
+  --bg-dark: #121212;
+  --text-light: #000;
+  --text-dark: #fff;
+  --card-light: #fff;
+  --card-dark: #1e1e1e;
+  --primary-color: #0077cc;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  margin:0;
+  padding:0;
+  background: var(--bg-light);
+  color: var(--text-light);
+  transition: all 0.3s;
+}
+
+body.dark {
+  background: var(--bg-dark);
+  color: var(--text-dark);
+}
+
+header {
+  background: var(--primary-color);
+  color:white;
+  padding: 20px 0;
+  text-align:center;
+  box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+header h1 {margin:0; font-size:2rem;}
+.toggle-theme {position:absolute; right:20px; top:25px; cursor:pointer; font-weight:bold; color:white;}
+
+main {max-width:1000px; margin:40px auto; padding:0 20px; display:flex; flex-wrap:wrap; gap:20px;}
+
+textarea {
+  flex:1 1 500px;
+  min-height:250px;
+  padding:15px;
+  font-size:16px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  resize:none;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+  transition: all 0.3s;
+}
+
+body.dark textarea {background:#1e1e1e; color:white; border:1px solid #444;}
+
+.stats {
+  flex:1 1 400px;
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+}
+
+.card {
+  background: var(--card-light);
+  padding:15px 20px;
+  border-radius:10px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);
+  transition: all 0.3s;
+}
+
+body.dark .card {background: var(--card-dark); box-shadow:0 2px 8px rgba(255,255,255,0.05);}
+
+.card h3 {margin-top:0; color:var(--primary-color); font-size:1.2rem;}
+
+table {width:100%; border-collapse:collapse; margin-top:10px;}
+table th, table td {padding:8px; border-bottom:1px solid #ddd; text-align:left;}
+
+footer {text-align:center; margin:40px 0; color:#555; font-size:0.9rem;}
+
+.progress-container {background:#ddd; border-radius:10px; height:20px; margin-top:10px;}
+.progress-bar {height:100%; width:0%; background:var(--primary-color); border-radius:10px; text-align:center; color:white; line-height:20px;}
+
+@media(max-width:900px){main{flex-direction:column;}}
 </style>
 </head>
 <body>
-<h1>Word Counter</h1>
-<textarea id="text" placeholder="Type or paste your text here..."></textarea><br>
-<button onclick="countWords()">Count Words & Characters</button>
-<div class="result" id="result"></div>
+
+<header>
+  <h1>SmartoolsWorld Word Counter Pro</h1>
+  <span class="toggle-theme" onclick="toggleTheme()">🌙</span>
+</header>
+
+<main>
+  <textarea id="text" placeholder="Type or paste your text here..."></textarea>
+
+  <div class="stats">
+    <div class="card">
+      <h3>Word Count</h3>
+      <p id="wordCount">0</p>
+    </div>
+    <div class="card">
+      <h3>Character Count</h3>
+      <p id="charCount">0</p>
+    </div>
+    <div class="card">
+      <h3>Line Count</h3>
+      <p id="lineCount">0</p>
+    </div>
+    <div class="card">
+      <h3>Sentence Count</h3>
+      <p id="sentenceCount">0</p>
+    </div>
+    <div class="card">
+      <h3>Paragraph Count</h3>
+      <p id="paraCount">0</p>
+    </div>
+    <div class="card">
+      <h3>Average Word Length</h3>
+      <p id="avgWordLen">0</p>
+    </div>
+
+    <div class="card">
+      <h3>Readability Scores</h3>
+      <p id="flesch">Flesch Reading Ease: 0</p>
+      <p id="kincaid">Flesch-Kincaid Grade: 0</p>
+      <p id="fog">Gunning Fog Index: 0</p>
+    </div>
+
+    <div class="card">
+      <h3>Writing Goal</h3>
+      <input type="number" id="goalInput" placeholder="Set word goal" style="width:100%;padding:5px;margin-bottom:5px;">
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar">0%</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Keyword Frequency</h3>
+      <table id="keywordTable">
+        <tr><th>Word</th><th>Count</th></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Grammar Suggestions</h3>
+      <ul id="grammarList" style="margin:0; padding-left:20px;"></ul>
+    </div>
+  </div>
+</main>
+
+<footer>
+SmartoolsWorld &copy; 2025 | Free online tools hub
+</footer>
 
 <script>
-function countWords() {
-    const text = document.getElementById('text').value.trim();
-    const words = text === "" ? 0 : text.split(/\s+/).length;
-    const characters = text.length;
-    document.getElementById('result').innerHTML = `Words: ${words} <br> Characters: ${characters}`;
+const textArea = document.getElementById('text');
+const wordCount = document.getElementById('wordCount');
+const charCount = document.getElementById('charCount');
+const lineCount = document.getElementById('lineCount');
+const sentenceCount = document.getElementById('sentenceCount');
+const paraCount = document.getElementById('paraCount');
+const avgWordLen = document.getElementById('avgWordLen');
+const keywordTable = document.getElementById('keywordTable');
+const grammarList = document.getElementById('grammarList');
+const goalInput = document.getElementById('goalInput');
+const progressBar = document.getElementById('progressBar');
+
+textArea.addEventListener('input', updateStats);
+
+function toggleTheme(){
+  document.body.classList.toggle('dark');
 }
-</script>
-</body>
-</html>
+
+function updateStats(){
+  const text = textArea.value.trim();
+  const words = text ? text.match(/\b\w+\b/g) : [];
+  wordCount.textContent = words.length;
+  charCount.textContent = text.length;
+  const lines = text.split(/\n/).filter(l=>l.trim()!=='');
+  lineCount.textContent = lines.length;
+  const sentences = text.split(/[.!?]+/).filter(s=>s.trim()!=='');
+  sentenceCount.textContent = sentences.length;
+  const paragraphs = text.split(/\n\n+/).filter(p=>p.trim()!=='');
+  paraCount.textContent = paragraphs.length;
+  const totalLetters = words.reduce((sum,w)=>sum+w.length,0);
+  avgWordLen.textContent = words.length ? (totalLetters/words.length).toFixed(2) : 0;
+
+  // Update progress bar
+  const goal = parseInt(goalInput.value);
+  if(goal>0){
+    const percent = Math.min(100, Math.round((words.length/goal)*100));
+    progressBar.style.width = percent + '%';
+    progressBar.textContent = percent + '%';
+  } else {
+    progressBar.style.width = '0%';
+    progressBar.textContent = '0%';
+  }
+
+  // Keyword frequency
+  const freq = {};
+  words.forEach(w=>{
+    w=w.toLowerCase();
+    if(!['the','and','a','is','in','of','to','for','on'].includes(w)) freq[w] = (freq[w]||0)+1;
+  });
+  keywordTable.innerHTML = '<tr><th>Word</th><th>Count</th></tr>';
+  Object.keys(freq).sort((a,b)=>freq[b]-freq[a]).forEach(w=>{
