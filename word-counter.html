@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Counter - SmartoolsWorld</title>
+<meta name="description" content="SmartoolsWorld Word Counter - Free online tool to count words, characters, and more quickly and easily.">
+<style>
+body {font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; text-align: center;}
+textarea {width: 100%; height: 150px; padding: 10px; font-size: 16px;}
+button {padding: 10px 20px; font-size: 16px; margin-top: 10px;}
+.result {margin-top: 20px; font-size: 18px;}
+</style>
+</head>
+<body>
+<h1>Word Counter</h1>
+<textarea id="text" placeholder="Type or paste your text here..."></textarea><br>
+<button onclick="countWords()">Count Words & Characters</button>
+<div class="result" id="result"></div>
+
+<script>
+function countWords() {
+    const text = document.getElementById('text').value.trim();
+    const words = text === "" ? 0 : text.split(/\s+/).length;
+    const characters = text.length;
+    document.getElementById('result').innerHTML = `Words: ${words} <br> Characters: ${characters}`;
+}
+</script>
+</body>
+</html>
