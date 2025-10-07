@@ -40,12 +40,20 @@ header {
   padding: 20px 0;
   text-align:center;
   box-shadow:0 2px 5px rgba(0,0,0,0.1);
+  position: relative;
 }
 
 header h1 {margin:0; font-size:2rem;}
 .toggle-theme {position:absolute; right:20px; top:25px; cursor:pointer; font-weight:bold; color:white;}
 
-main {max-width:1000px; margin:40px auto; padding:0 20px; display:flex; flex-wrap:wrap; gap:20px;}
+main {
+  max-width:1000px;
+  margin:40px auto;
+  padding:0 20px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+}
 
 textarea {
   flex:1 1 500px;
@@ -179,36 +187,35 @@ function toggleTheme(){
   document.body.classList.toggle('dark');
 }
 
-function updateStats(){
-  const text = textArea.value.trim();
-  const words = text ? text.match(/\b\w+\b/g) : [];
-  wordCount.textContent = words.length;
-  charCount.textContent = text.length;
-  const lines = text.split(/\n/).filter(l=>l.trim()!=='');
-  lineCount.textContent = lines.length;
+// Function to calculate readability scores
+function readabilityScores(text){
   const sentences = text.split(/[.!?]+/).filter(s=>s.trim()!=='');
-  sentenceCount.textContent = sentences.length;
-  const paragraphs = text.split(/\n\n+/).filter(p=>p.trim()!=='');
-  paraCount.textContent = paragraphs.length;
-  const totalLetters = words.reduce((sum,w)=>sum+w.length,0);
-  avgWordLen.textContent = words.length ? (totalLetters/words.length).toFixed(2) : 0;
+  const words = text.match(/\b\w+\b/g) || [];
+  const syllables = words.reduce((sum,w)=>{
+    return sum + countSyllables(w);
+  },0);
 
-  // Update progress bar
-  const goal = parseInt(goalInput.value);
-  if(goal>0){
-    const percent = Math.min(100, Math.round((words.length/goal)*100));
-    progressBar.style.width = percent + '%';
-    progressBar.textContent = percent + '%';
-  } else {
-    progressBar.style.width = '0%';
-    progressBar.textContent = '0%';
-  }
+  const wordsCount = words.length;
+  const sentencesCount = sentences.length || 1;
 
-  // Keyword frequency
-  const freq = {};
-  words.forEach(w=>{
-    w=w.toLowerCase();
-    if(!['the','and','a','is','in','of','to','for','on'].includes(w)) freq[w] = (freq[w]||0)+1;
-  });
-  keywordTable.innerHTML = '<tr><th>Word</th><th>Count</th></tr>';
-  Object.keys(freq).sort((a,b)=>freq[b]-freq[a]).forEach(w=>{
+  const flesch = 206.835 - 1.015*(wordsCount/sentencesCount) - 84.6*(syllables/wordsCount || 0);
+  const kincaid = 0.39*(wordsCount/sentencesCount) + 11.8*(syllables/wordsCount || 0) - 15.59;
+  const fog = 0.4*((wordsCount/sentencesCount) + 100*(words.filter(w=>w.length>=3).length/wordsCount));
+
+  return {flesch: flesch.toFixed(2), kincaid:kincaid.toFixed(2), fog:fog.toFixed(2)};
+}
+
+// Approximate syllable counter
+function countSyllables(word){
+  word = word.toLowerCase();
+  if(word.length<=3) return 1;
+  word = word.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, '');
+  const matches = word.match(/[aeiouy]{1,2}/g);
+  return matches ? matches.length : 1;
+}
+
+// Grammar suggestions using LanguageTool API
+async function grammarCheck(text){
+  if(!text) return [];
+  try{
+    const res = await fetch("https://api.languagetoolplus.com/v
