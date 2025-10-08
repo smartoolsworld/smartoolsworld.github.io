@@ -1,221 +1,431 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmartoolsWorld Word Counter Pro</title>
-<meta name="description" content="SmartoolsWorld Pro Word Counter - Automatic grammar check, readability scores, keyword analysis, and writing progress. Modern and professional interface.">
-
-<!-- Favicon placeholder -->
-<link rel="icon" href="https://via.placeholder.com/32.png?text=S" type="image/png">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SmartoolsWorld — Word Counter Pro</title>
+<meta name="description" content="SmartoolsWorld Word Counter Pro: live counts, keyword analysis, readability scores, grammar check, writing goals, dark mode, responsive." />
+<link rel="icon" href="https://via.placeholder.com/32.png?text=S" />
 
 <style>
-:root {
-  --bg-light: #f4f6f8;
-  --bg-dark: #121212;
-  --text-light: #000;
-  --text-dark: #fff;
-  --card-light: #fff;
-  --card-dark: #1e1e1e;
-  --primary-color: #0077cc;
-}
+  /* --- Theme variables --- */
+  :root{
+    --bg:#f4f6f8; --card:#ffffff; --muted:#6b7280; --accent:#0077cc; --text:#0f172a;
+    --shadow: 0 6px 18px rgba(12,20,35,0.08);
+  }
+  body.dark{
+    --bg:#0b0f12; --card:#0f1720; --muted:#94a3b8; --accent:#3aa0ff; --text:#e6eef9; --shadow: 0 6px 18px rgba(0,0,0,0.6);
+  }
 
-body {
-  font-family: 'Arial', sans-serif;
-  margin:0;
-  padding:0;
-  background: var(--bg-light);
-  color: var(--text-light);
-  transition: all 0.3s;
-}
+  /* --- Reset & layout --- */
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased;
+    transition:background .22s,color .22s;
+  }
 
-body.dark {
-  background: var(--bg-dark);
-  color: var(--text-dark);
-}
+  header{
+    background:linear-gradient(90deg,var(--accent), #2b9cff); color:#fff;
+    padding:18px 20px; display:flex; align-items:center; justify-content:center; position:relative;
+    box-shadow:var(--shadow);
+  }
+  header h1{margin:0;font-size:18px;letter-spacing:0.2px}
+  .header-actions{position:absolute; right:16px; top:50%; transform:translateY(-50%); display:flex; gap:8px; align-items:center;}
 
-header {
-  background: var(--primary-color);
-  color:white;
-  padding: 20px 0;
-  text-align:center;
-  box-shadow:0 2px 5px rgba(0,0,0,0.1);
-  position: relative;
-}
+  main{max-width:1100px;margin:28px auto;padding:16px;display:flex;gap:18px; align-items:flex-start;}
+  @media(max-width:950px){main{flex-direction:column;padding:12px}}
 
-header h1 {margin:0; font-size:2rem;}
-.toggle-theme {position:absolute; right:20px; top:25px; cursor:pointer; font-weight:bold; color:white;}
+  /* editor */
+  .editor{
+    flex:1 1 580px; min-width:260px;
+  }
+  textarea#editor{
+    width:100%; min-height:360px; resize:vertical; padding:16px; font-size:15px;
+    border-radius:12px; border:1px solid rgba(15,23,42,0.06); background:var(--card); color:var(--text);
+    box-shadow:var(--shadow); line-height:1.6;
+  }
+  .toolbar{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+  .btn{background:var(--accent); color:#fff; border:0; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:600}
+  .btn.ghost{background:transparent;border:1px solid rgba(15,23,42,0.06); color:var(--text); font-weight:600}
+  .small{padding:6px 8px;font-size:13px}
 
-main {
-  max-width:1000px;
-  margin:40px auto;
-  padding:0 20px;
-  display:flex;
-  flex-wrap:wrap;
-  gap:20px;
-}
+  /* stats column */
+  .side{
+    width:360px; min-width:260px; display:flex; flex-direction:column; gap:12px;
+  }
+  @media(max-width:950px){.side{width:auto}}
 
-textarea {
-  flex:1 1 500px;
-  min-height:250px;
-  padding:15px;
-  font-size:16px;
-  border-radius:8px;
-  border:1px solid #ccc;
-  resize:none;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-  transition: all 0.3s;
-}
+  .card{
+    background:var(--card); padding:14px; border-radius:12px; box-shadow:var(--shadow);
+  }
+  .card h3{margin:0 0 8px 0; color:var(--accent); font-size:15px}
+  .stat-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px}
+  .stat{
+    padding:10px;border-radius:8px; background: linear-gradient(180deg, rgba(255,255,255,0.6), transparent);
+    min-height:58px; display:flex; flex-direction:column; justify-content:center;
+  }
+  .stat .num{font-size:20px; font-weight:700}
+  .muted{color:var(--muted); font-size:13px}
 
-body.dark textarea {background:#1e1e1e; color:white; border:1px solid #444;}
+  table{width:100%;border-collapse:collapse;margin-top:8px}
+  table th, table td{padding:8px 6px; text-align:left; border-bottom:1px solid rgba(15,23,42,0.05); font-size:14px}
+  .progress-wrap{background:rgba(0,0,0,0.05);border-radius:10px; overflow:hidden; height:18px}
+  .progress{height:100%; background:var(--accent); width:0%; color:white; text-align:center; font-size:12px; line-height:18px; transition:width .22s}
 
-.stats {
-  flex:1 1 400px;
-  display:flex;
-  flex-direction:column;
-  gap:15px;
-}
+  /* collapsible */
+  .collapsible{cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:12px}
+  .collapsible .label{font-weight:600}
+  .panel{margin-top:8px}
 
-.card {
-  background: var(--card-light);
-  padding:15px 20px;
-  border-radius:10px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.1);
-  transition: all 0.3s;
-}
-
-body.dark .card {background: var(--card-dark); box-shadow:0 2px 8px rgba(255,255,255,0.05);}
-
-.card h3 {margin-top:0; color:var(--primary-color); font-size:1.2rem;}
-
-table {width:100%; border-collapse:collapse; margin-top:10px;}
-table th, table td {padding:8px; border-bottom:1px solid #ddd; text-align:left;}
-
-footer {text-align:center; margin:40px 0; color:#555; font-size:0.9rem;}
-
-.progress-container {background:#ddd; border-radius:10px; height:20px; margin-top:10px;}
-.progress-bar {height:100%; width:0%; background:var(--primary-color); border-radius:10px; text-align:center; color:white; line-height:20px;}
-
-@media(max-width:900px){main{flex-direction:column;}}
+  footer{max-width:1100px;margin:18px auto 60px auto;text-align:center;color:var(--muted); font-size:14px}
+  input[type="number"]{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(15,23,42,0.06);background:transparent;color:var(--text)}
+  .note{font-size:13px;color:var(--muted)}
+  .danger{color:#d9534f}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>SmartoolsWorld Word Counter Pro</h1>
-  <span class="toggle-theme" onclick="toggleTheme()">🌙</span>
+  <h1>SmartoolsWorld — Word Counter Pro</h1>
+  <div class="header-actions">
+    <button class="btn small ghost" id="clearBtn" title="Clear editor">Clear</button>
+    <button class="btn small" id="saveBtn" title="Save to browser">Save</button>
+    <button class="btn small" id="copyBtn" title="Copy text">Copy</button>
+    <button class="btn small" id="downloadBtn" title="Download as .txt">Download</button>
+    <button class="btn small" id="themeToggle" title="Toggle theme">🌙</button>
+  </div>
 </header>
 
 <main>
-  <textarea id="text" placeholder="Type or paste your text here..."></textarea>
+  <!-- Editor -->
+  <section class="editor">
+    <textarea id="editor" placeholder="Type or paste your document here..."></textarea>
 
-  <div class="stats">
-    <div class="card">
-      <h3>Word Count</h3>
-      <p id="wordCount">0</p>
-    </div>
-    <div class="card">
-      <h3>Character Count</h3>
-      <p id="charCount">0</p>
-    </div>
-    <div class="card">
-      <h3>Line Count</h3>
-      <p id="lineCount">0</p>
-    </div>
-    <div class="card">
-      <h3>Sentence Count</h3>
-      <p id="sentenceCount">0</p>
-    </div>
-    <div class="card">
-      <h3>Paragraph Count</h3>
-      <p id="paraCount">0</p>
-    </div>
-    <div class="card">
-      <h3>Average Word Length</h3>
-      <p id="avgWordLen">0</p>
+    <div class="toolbar">
+      <div style="flex:1"><span class="note">Auto-save to browser: <strong id="autosaveState">ON</strong></span></div>
+      <button class="btn small" id="grammarBtn">Check Grammar</button>
+      <button class="btn small ghost" id="toggleDetailsBtn">Toggle Details</button>
     </div>
 
-    <div class="card">
-      <h3>Readability Scores</h3>
-      <p id="flesch">Flesch Reading Ease: 0</p>
-      <p id="kincaid">Flesch-Kincaid Grade: 0</p>
-      <p id="fog">Gunning Fog Index: 0</p>
-    </div>
+    <!-- Collapsible details for mobile -->
+    <div id="detailsMobile" style="display:none;margin-top:12px"></div>
+  </section>
 
+  <!-- Side stats -->
+  <aside class="side">
     <div class="card">
-      <h3>Writing Goal</h3>
-      <input type="number" id="goalInput" placeholder="Set word goal" style="width:100%;padding:5px;margin-bottom:5px;">
-      <div class="progress-container">
-        <div class="progress-bar" id="progressBar">0%</div>
+      <h3>Quick Stats</h3>
+      <div class="stat-grid">
+        <div class="stat"><div class="num" id="words">0</div><div class="muted">Words</div></div>
+        <div class="stat"><div class="num" id="characters">0</div><div class="muted">Characters</div></div>
+        <div class="stat"><div class="num" id="sentences">0</div><div class="muted">Sentences</div></div>
+        <div class="stat"><div class="num" id="lines">0</div><div class="muted">Lines</div></div>
+        <div class="stat"><div class="num" id="paragraphs">0</div><div class="muted">Paragraphs</div></div>
+        <div class="stat"><div class="num" id="avgWord">0</div><div class="muted">Avg word length</div></div>
       </div>
     </div>
 
     <div class="card">
-      <h3>Keyword Frequency</h3>
-      <table id="keywordTable">
-        <tr><th>Word</th><th>Count</th></tr>
-      </table>
+      <h3>Readability</h3>
+      <div class="muted">Flesch Reading Ease</div><div id="flesch" style="font-weight:700">0</div>
+      <div style="height:8px"></div>
+      <div class="muted">Flesch-Kincaid Grade</div><div id="kincaid" style="font-weight:700">0</div>
+      <div style="height:8px"></div>
+      <div class="muted">Gunning Fog Index</div><div id="fog" style="font-weight:700">0</div>
     </div>
 
     <div class="card">
-      <h3>Grammar Suggestions</h3>
-      <ul id="grammarList" style="margin:0; padding-left:20px;"></ul>
+      <h3>Goal & Progress</h3>
+      <div class="muted">Set target words</div>
+      <input id="goalInput" type="number" placeholder="e.g. 1000" min="1" />
+      <div style="height:10px"></div>
+      <div class="progress-wrap"><div id="progressBar" class="progress">0%</div></div>
     </div>
-  </div>
+
+    <div class="card">
+      <div class="collapsible" id="kwToggle"><span class="label">Keyword Frequency</span><span class="muted">top terms</span></div>
+      <div class="panel" id="kwPanel">
+        <table id="kwTable"><thead><tr><th>Word</th><th>Count</th></tr></thead><tbody><tr><td colspan="2" class="muted">Start typing to populate</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="collapsible" id="gramToggle"><span class="label">Grammar Suggestions</span><span class="muted">powered by LanguageTool</span></div>
+      <div class="panel" id="gramPanel">
+        <div id="grammarMsg" class="note">Press <strong>Check Grammar</strong> to fetch suggestions (external API).</div>
+        <ul id="grammarList" style="padding-left:18px;margin-top:8px"></ul>
+      </div>
+    </div>
+  </aside>
 </main>
 
 <footer>
-SmartoolsWorld &copy; 2025 | Free online tools hub
+  SmartoolsWorld © 2025 — Free online tools hub • Your data stays in your browser unless you use save/download
 </footer>
 
 <script>
-const textArea = document.getElementById('text');
-const wordCount = document.getElementById('wordCount');
-const charCount = document.getElementById('charCount');
-const lineCount = document.getElementById('lineCount');
-const sentenceCount = document.getElementById('sentenceCount');
-const paraCount = document.getElementById('paraCount');
-const avgWordLen = document.getElementById('avgWordLen');
-const keywordTable = document.getElementById('keywordTable');
+/* ========== Utilities ========== */
+const editor = document.getElementById('editor');
+const wordsEl = document.getElementById('words');
+const charsEl = document.getElementById('characters');
+const sentencesEl = document.getElementById('sentences');
+const linesEl = document.getElementById('lines');
+const parasEl = document.getElementById('paragraphs');
+const avgWordEl = document.getElementById('avgWord');
+const fleEl = document.getElementById('flesch');
+const fkEl = document.getElementById('kincaid');
+const fogEl = document.getElementById('fog');
+const kwTableBody = document.querySelector('#kwTable tbody');
 const grammarList = document.getElementById('grammarList');
+const grammarMsg = document.getElementById('grammarMsg');
 const goalInput = document.getElementById('goalInput');
 const progressBar = document.getElementById('progressBar');
+const autosaveState = document.getElementById('autosaveState');
 
-textArea.addEventListener('input', updateStats);
+let autosaveEnabled = true;
+const STORAGE_KEY = 'smartools_editor_v1';
+const THEME_KEY = 'smartools_theme_v1';
 
-function toggleTheme(){
+/* --- stopwords list (simple) --- */
+const STOPWORDS = new Set([
+  'the','and','a','is','in','of','to','for','on','it','this','that','with','as','are','was','be','by','an','or','from','at','if','but','not','they','we','you','he','she','i'
+]);
+
+/* ========== Load saved draft and theme ========== */
+(function loadSaved(){
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if(saved){ editor.value = saved; }
+  const theme = localStorage.getItem(THEME_KEY);
+  if(theme === 'dark'){ document.body.classList.add('dark'); document.getElementById('themeToggle').textContent='☀️' }
+  updateAll();
+})();
+
+/* ========== Editor events ========== */
+let updateTimer = null;
+editor.addEventListener('input', ()=> {
+  if(autosaveEnabled) localStorage.setItem(STORAGE_KEY, editor.value);
+  if(updateTimer) clearTimeout(updateTimer);
+  updateTimer = setTimeout(updateAll, 160); // debounce updates for performance
+});
+
+/* Buttons */
+document.getElementById('clearBtn').addEventListener('click', ()=>{
+  if(!confirm('Clear editor? This will also clear saved draft.')) return;
+  editor.value=''; localStorage.removeItem(STORAGE_KEY); updateAll();
+});
+document.getElementById('saveBtn').addEventListener('click', ()=> {
+  localStorage.setItem(STORAGE_KEY, editor.value);
+  alert('Saved locally in your browser.');
+});
+document.getElementById('copyBtn').addEventListener('click', async ()=> {
+  try{ await navigator.clipboard.writeText(editor.value); alert('Copied to clipboard'); }
+  catch(e){ alert('Copy failed — your browser may block clipboard.'); }
+});
+document.getElementById('downloadBtn').addEventListener('click', ()=> {
+  const blob = new Blob([editor.value], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'document.txt'; a.click(); URL.revokeObjectURL(url);
+});
+
+/* theme toggle */
+document.getElementById('themeToggle').addEventListener('click', ()=>{
   document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  localStorage.setItem(THEME_KEY, isDark? 'dark':'light');
+  document.getElementById('themeToggle').textContent = isDark? '☀️':'🌙';
+});
+
+/* details toggle (mobile) */
+document.getElementById('toggleDetailsBtn').addEventListener('click', ()=>{
+  const el = document.getElementById('detailsMobile');
+  el.style.display = (el.style.display === 'none' || el.style.display==='') ? 'block' : 'none';
+  el.innerHTML = document.querySelector('.side').outerHTML;
+});
+
+/* collapsible toggles */
+document.getElementById('kwToggle').addEventListener('click', ()=>{ const p = document.getElementById('kwPanel'); p.style.display = (p.style.display==='none' || p.style.display==='')? 'block':'none'; });
+document.getElementById('gramToggle').addEventListener('click', ()=>{ const p = document.getElementById('gramPanel'); p.style.display = (p.style.display==='none' || p.style.display==='')? 'block':'none'; });
+
+/* grammar button */
+document.getElementById('grammarBtn').addEventListener('click', ()=> runGrammarCheck(editor.value));
+
+/* goal input */
+goalInput.addEventListener('input', updateProgress);
+
+/* ========== Core update function ========== */
+function updateAll(){
+  const text = editor.value;
+  // characters
+  const chars = text.length;
+  charsEl.textContent = chars;
+
+  // lines - count non-empty lines
+  const lines = text.split(/\r\n|\r|\n/).filter(l => l.trim() !== '');
+  linesEl.textContent = lines.length;
+
+  // paragraphs - separated by blank lines
+  const paras = text.split(/\n\s*\n/).filter(p => p.trim() !== '');
+  parasEl.textContent = paras.length;
+
+  // words - word regex
+  const wordsArr = text.match(/\b[^\s]+\b/g) || [];
+  const words = wordsArr.length;
+  wordsEl.textContent = words;
+
+  // sentences - basic split
+  const sentences = text.split(/[.!?]+/).filter(s=>s.trim()!=='').length;
+  sentencesEl.textContent = sentences;
+
+  // avg word length
+  const letters = wordsArr.reduce((s, w) => s + w.replace(/[^A-Za-z0-9]/g,'').length, 0);
+  avgWordEl.textContent = words ? (letters/words).toFixed(2) : '0';
+
+  // readability
+  const readability = calcReadability(text, wordsArr, sentences);
+  fleEl.textContent = readability.flesch;
+  fkEl.textContent = readability.kincaid;
+  fogEl.textContent = readability.fog;
+
+  // keyword frequency
+  updateKeywords(wordsArr);
+
+  // progress bar
+  updateProgress();
+
+  // clear grammar suggestions on edit (user will re-run)
+  grammarList.innerHTML = '';
+  grammarMsg.textContent = 'Press "Check Grammar" to fetch suggestions (external API).';
 }
 
-// Function to calculate readability scores
-function readabilityScores(text){
-  const sentences = text.split(/[.!?]+/).filter(s=>s.trim()!=='');
-  const words = text.match(/\b\w+\b/g) || [];
-  const syllables = words.reduce((sum,w)=>{
-    return sum + countSyllables(w);
-  },0);
-
-  const wordsCount = words.length;
-  const sentencesCount = sentences.length || 1;
-
-  const flesch = 206.835 - 1.015*(wordsCount/sentencesCount) - 84.6*(syllables/wordsCount || 0);
-  const kincaid = 0.39*(wordsCount/sentencesCount) + 11.8*(syllables/wordsCount || 0) - 15.59;
-  const fog = 0.4*((wordsCount/sentencesCount) + 100*(words.filter(w=>w.length>=3).length/wordsCount));
-
-  return {flesch: flesch.toFixed(2), kincaid:kincaid.toFixed(2), fog:fog.toFixed(2)};
+/* ========== Keyword frequency ========== */
+function updateKeywords(wordsArr){
+  const freq = {};
+  wordsArr.forEach(raw=>{
+    let w = raw.toLowerCase().replace(/^[^a-z0-9]+|[^a-z0-9]+$/g,''); // trim punctuation
+    if(!w || STOPWORDS.has(w) || w.length<2) return;
+    freq[w] = (freq[w]||0)+1;
+  });
+  const items = Object.entries(freq).sort((a,b)=>b[1]-a[1]);
+  kwTableBody.innerHTML = '';
+  if(items.length === 0){
+    kwTableBody.innerHTML = '<tr><td colspan="2" class="muted">No keywords yet</td></tr>';
+    return;
+  }
+  items.slice(0,30).forEach(([w,c])=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${escapeHtml(w)}</td><td>${c}</td>`;
+    kwTableBody.appendChild(tr);
+  });
 }
 
-// Approximate syllable counter
+/* ========== Readability calculations ========== */
+function calcReadability(text, wordsArr, sentencesCount){
+  const wordsCount = wordsArr.length || 0;
+  const sentences = sentencesCount || 1;
+  const syllables = wordsArr.reduce((s,w)=> s + countSyllables(w), 0);
+  const flesch = (wordsCount===0) ? 0 : (206.835 - 1.015*(wordsCount/sentences) - 84.6*(syllables/wordsCount));
+  const kincaid = (wordsCount===0) ? 0 : (0.39*(wordsCount/sentences) + 11.8*(syllables/wordsCount) - 15.59);
+  const complexWords = wordsArr.filter(w => countSyllables(w) >= 3).length;
+  const fog = (wordsCount===0) ? 0 : (0.4*((wordsCount/sentences) + 100*(complexWords/wordsCount)));
+  return { flesch: Number(flesch.toFixed(2)), kincaid: Number(kincaid.toFixed(2)), fog: Number(fog.toFixed(2)) };
+}
+
+/* approximate syllable counter (fast heuristic) */
 function countSyllables(word){
-  word = word.toLowerCase();
-  if(word.length<=3) return 1;
-  word = word.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, '');
+  word = word.toLowerCase().replace(/[^a-z]/g,'');
+  if(!word) return 0;
+  if(word.length <= 3) return 1;
+  word = word.replace(/(?:es|ed|[^a-z]e)$/, '');
   const matches = word.match(/[aeiouy]{1,2}/g);
   return matches ? matches.length : 1;
 }
 
-// Grammar suggestions using LanguageTool API
-async function grammarCheck(text){
-  if(!text) return [];
+/* ========== Grammar check using LanguageTool (public) ========== */
+let lastGrammarAbort = null;
+async function runGrammarCheck(text){
+  grammarList.innerHTML = '';
+  if(!text.trim()){ grammarMsg.textContent = 'Editor is empty.'; return; }
+  grammarMsg.textContent = 'Checking... (may take a few seconds)';
+
+  // prepare body for LanguageTool public endpoint
+  const url = 'https://api.languagetool.org/v2/check';
+  const params = new URLSearchParams();
+  params.append('text', text);
+  params.append('language', 'en-US');
+
+  // abort controller to allow cancellation if needed
+  if(lastGrammarAbort) lastGrammarAbort.abort();
+  lastGrammarAbort = new AbortController();
+
   try{
-    const res = await fetch("https://api.languagetoolplus.com/v
+    const res = await fetch(url, {method:'POST', body: params, signal: lastGrammarAbort.signal});
+    if(!res.ok) throw new Error('Grammar API error: ' + res.status);
+    const data = await res.json();
+    const matches = data.matches || [];
+    if(matches.length === 0){
+      grammarMsg.textContent = 'No grammar or spelling suggestions found.';
+      return;
+    }
+    grammarMsg.textContent = `Found ${matches.length} suggestions (click any to highlight).`;
+    // show top 12 suggestions
+    matches.slice(0,12).forEach(m=>{
+      const li = document.createElement('li');
+      const message = m.message + (m.replacements && m.replacements.length ? ' — Suggested: ' + m.replacements.slice(0,3).map(r=>r.value).join(', ') : '');
+      li.textContent = message;
+      li.style.cursor = 'pointer';
+      li.title = 'Click to highlight the context in editor';
+      li.addEventListener('click', ()=> highlightGrammar(m));
+      grammarList.appendChild(li);
+    });
+  }catch(err){
+    console.error('Grammar check failed', err);
+    grammarMsg.innerHTML = '<span class="danger">Grammar check unavailable.</span> The public API may be blocked or rate-limited in your location. The rest of the tool still works.';
+  }
+}
+
+/* highlight grammar context in editor (select text range) */
+function highlightGrammar(match){
+  try{
+    const context = match.context;
+    const offset = context.offset;
+    const length = context.length;
+    editor.focus();
+    editor.setSelectionRange(offset, offset + length);
+    // scroll into view:
+    const lines = editor.value.substr(0, offset).split('\n').length;
+    editor.scrollTop = (lines - 5) * 18;
+  }catch(e){
+    console.error('Highlight failed', e);
+  }
+}
+
+/* ========== Progress bar update ========== */
+function updateProgress(){
+  const words = (editor.value.match(/\b[^\s]+\b/g) || []).length;
+  const goal = parseInt(goalInput.value) || 0;
+  if(!goal){ progressBar.style.width = '0%'; progressBar.textContent = '0%'; return; }
+  const percent = Math.min(100, Math.round((words/goal)*100));
+  progressBar.style.width = percent + '%';
+  progressBar.textContent = percent + '%';
+}
+
+/* ========== Helpers ========== */
+function escapeHtml(s){ return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ========== Initial call ========== */
+updateAll();
+
+/* ========== Optional: auto-check grammar after pause (disabled by default) ========== */
+/* If you want automatic grammar checks while typing, uncomment below and be careful with API rate limits.
+let autoGrammarTimer = null;
+editor.addEventListener('input', ()=> {
+  if(autoGrammarTimer) clearTimeout(autoGrammarTimer);
+  autoGrammarTimer = setTimeout(()=> runGrammarCheck(editor.value), 2000);
+});
+*/
+
+</script>
+</body>
+                                                                                               </html>
